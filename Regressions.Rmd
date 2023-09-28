@@ -1,0 +1,55 @@
+In Figure 3 and 4 there are four different regressions presented. Since that data is not that linear, we preferred quadratic (polynomial base-2) regressions when non-linearity improved AIC.
+
+# Regressions
+
+```{r regression1}
+lm1b <- lm(ESTIMATION ~ date, data = HomoPanDivergences)
+lm1 <- lm(ESTIMATION ~ poly(date, 2), data = HomoPanDivergences)
+summary(lm1)
+confint(lm1, level = 0.95) # 95% confidence intervals
+tab_model(lm1)
+
+AIC(lm1b, lm1)
+
+```
+
+```{r regression2}
+
+lm2 <- lm(ESTIMATION ~ date, data = sahelReg)
+summary(lm2)
+confint(lm2, level = 0.95) # 95% confidence intervals
+tab_model(lm2)
+
+```
+
+```{r regression3}
+
+lm3b <- lm(ESTIMATION ~ date, data = filteredReg)
+lm3 <- lm(ESTIMATION ~ poly(date, 2), data = filteredReg)
+summary(lm3)
+confint(lm3, level = 0.95) # 95% confidence intervals
+tab_model(lm3)
+
+AIC(lm3b, lm3)
+
+```
+
+```{r regression4}
+
+lm4 <- lm(ESTIMATION ~ date, data = genomeReg)
+summary(lm4)
+confint(lm4, level = 0.95) # 95% confidence intervals
+tab_model(lm4)
+
+```
+
+```{r joinedregs }
+
+tab_model(lm1, lm2, lm3, lm4)
+
+```
+
+
+# Conclusions
+
+Overall, our analysis indicates that the late Miocene is the most likely geological period for the hominin-panin divergence, however this represents quite a big period totaling 6.3 million years, which is in fact more time than has passed since the end of the Miocene up to present time. Therefore it is necessary to be more precise when defining the time of divergence. The filtered-datasets seem to indicate that the split must have happened quite early within the Late Miocene, most likely before 8.5 Ma, with our most strict analyses suggesting some time between 9 and 11.5 Ma.
