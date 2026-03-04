@@ -1,5 +1,5 @@
-# Pan-Homo
-**Paleontological and Molecular Divergence of the Pan/Homo Split**
+# *Pan*-*Homo*
+**Paleontological and Molecular Divergence of the last common ancestor between hominins and panins**
 
 This repository provides a reproducible pipeline for the meta-analysis of molecular divergence estimates between humans and chimpanzees, evaluated against the late Miocene and early Pliocene fossil record.
 
@@ -18,7 +18,7 @@ Stores the `.rds` files for the 5 Bayesian models (Full, A, B, C, and Genomic).
 
 - `figures/`
 Scripts and outputs for the Main Manuscript figures.
-Output images are located in: `figures/outputs/`
+Output images are located in: `figures/output/`
 (`Figure_1.png` to `Figure_5.png`)
 
 - `supplementary/`
@@ -57,28 +57,28 @@ source("supplementary/make_si_tables.R")
 ### Main Figures
 
 #### Figure 1 – Molecular estimates histogram
-![Figure 1](figures/outputs/Figure_1.png)
+![Figure 1](figures/output/Figure_1.png)
 
 Dashed vertical lines represent the fossil thresholds. Note that instead of following a normal distribution, studies seem to cluster in excess around important fossil discoveries.
 
 ---
 
 #### Figure 2 – Interquartile range boxplots
-![Figure 2](figures/outputs/Figure_2.png)
+![Figure 2](figures/output/Figure_2.png)
 
 Divergence estimates filtered by different fossil thresholds. All boxplots fit within the late Miocene (11.6–5.3 Ma).
 
 ---
 
 #### Figure 3 – Full-dataset model trend
-![Figure 3](figures/outputs/Figure_3.png)
+![Figure 3](figures/output/Figure_3.png)
 
 Fitting the sample of *Panini/Hominini* split estimates by date of publication.
 
 ---
 
 #### Figure 4 – Linear regressions by source
-![Figure 4](figures/outputs/Figure_4.png)
+![Figure 4](figures/output/Figure_4.png)
 
 Linear regressions for different types of source datasets. 
 A) Includes early phenetic studies (immunological, DNA-DNA hybridization, etc.), but also later studies with virogenes and RNA; 
@@ -89,7 +89,7 @@ D) Large phylogenomic studies (also includes ‘total evidence dating’, i.e., 
 ---
 
 #### Figure 5 – Meta-analysis of phylogenomic estimates
-![Figure 5](figures/outputs/Figure_5.png)
+![Figure 5](figures/output/Figure_5.png)
 
 Forest plot depicting the specific effect size and sampled posterior distribution of genome-based studies.
 
