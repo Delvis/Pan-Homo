@@ -1,0 +1,6 @@
+"Subset","Bayes_Mean","CrI_Lower","CrI_Upper"
+"Full Dataset (No Filter)",6.59,6.27,6.92
+"Filter A (>4.4 Ma)",6.93,6.61,7.25
+"Filter B (>6.2 Ma)",7.7,7.37,8.03
+"Filter C (>7.2 Ma)",8.59,8.15,9.03
+"Main Genomic (>4.5 Ma)",7.99,7.37,8.63

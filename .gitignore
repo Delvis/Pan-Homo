@@ -1,0 +1,8 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+# Ignore temporary analysis reports
+PanHomoAnalysis.Rmd
+Regressions.Rmd
+legacy_reports/
