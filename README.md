@@ -113,11 +113,20 @@ R environment with the following packages:
 - `brms`
 - `Stan`
 - `tidybayes`
-- `ggdist`
 - `ggplot2`
+- `ggdist`
 - `ggridges`
+- `cowplot`
+- `sjPlot`
 - `psych`
 - `dplyr`
+- `glue`
+- `forcats`
+- `stringr`
+- `zoo`
+- `scales`
+
+
 
 ---
 
