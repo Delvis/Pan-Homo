@@ -114,3 +114,33 @@ n_obs <- nrow(HomoPanDivergences)
 u_mean <- mean(HomoPanDivergences$ESTIMATION)
 sdx <- sd(HomoPanDivergences$ESTIMATION)
 dnorm_fun <- function(x) dnorm(x, mean = u_mean, sd = sdx) * n_obs * bw
+
+# Data structure for Figure 2 (boxplot):
+
+# Constants required for the plot (matching your prepare_data.R and legacy code)
+lateMiocene_starts <- 11.63
+lateMiocene_ends   <- 5.333
+ggyaxis <- "Divergence Estimate (Ma)"
+
+# Step 1: Reconstruct boxdf using the exact original filtering logic
+newdf <- HomoPanDivergences
+newdf$Filtered <- " (No)"
+
+# Filter A (> 4.4 Ma)
+newdfA <- HomoPanDivergences[which(HomoPanDivergences$Min >= FAD_A | is.na(HomoPanDivergences$Min)),]
+newdfA <- newdfA[which(newdfA$ESTIMATION >= FAD_A),]
+newdfA$Filtered <- "4.4 Ma"
+
+# Filter B (> 6.2 Ma)
+newdfB <- HomoPanDivergences[which(HomoPanDivergences$Min >= FAD_B | is.na(HomoPanDivergences$Min)),]
+newdfB <- newdfB[which(newdfB$ESTIMATION >= FAD_B),]
+newdfB$Filtered <- "6.2 Ma"
+
+# Filter C (> 7.2 Ma)
+newdfC <- HomoPanDivergences[which(HomoPanDivergences$Min >= FAD_C | is.na(HomoPanDivergences$Min)),]
+newdfC <- newdfC[which(newdfC$ESTIMATION >= FAD_C),]
+newdfC$Filtered <- "7.2 Ma"
+
+# Combine into a single dataset and set factor levels for correct X-axis order
+boxdf <- rbind(newdf, newdfA, newdfB, newdfC)
+boxdf$Filtered <- factor(boxdf$Filtered, levels = c(" (No)", "4.4 Ma", "6.2 Ma", "7.2 Ma"))

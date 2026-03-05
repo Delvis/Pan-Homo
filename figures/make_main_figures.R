@@ -1,5 +1,4 @@
 # --- figures/make_main_figures.R ---
-# FINAL REPRODUCTION - FIXED FACTOR ORDERING AND LEGENDS
 
 library(ggplot2)
 library(dplyr)
@@ -38,27 +37,47 @@ ggsave("figures/output/Figure_1.png", fig1, width = 5, height = 2, dpi = 360,
        bg = 'white', type = 'cairo')
 
 # ------------------------------------------------------------------------------
-# FIGURE 2: Boxplots (FIXED ORDER)
+# FIGURE 2: Boxplots of Filtered Subsets (ORIGINAL AESTHETICS)
 # ------------------------------------------------------------------------------
-# Explicitly set levels so "None" appears first
-boxdf$Filtered <- factor(boxdf$Filtered, levels = c("None", "4.4 Ma", "6.2 Ma", "7.2 Ma"))
+message("Generating Figure 2 with exact original aesthetics...")
 
+# Generate the Plot with exact original layers
 fig2 <- ggplot(boxdf, aes(x = Filtered, y = ESTIMATION, fill = Filtered)) +
+  # Miocene background rectangle
   annotate("rect", xmin = -Inf, xmax = Inf,
            ymin = lateMiocene_ends, ymax = lateMiocene_starts, alpha = .05) +
-  geom_boxplot(outlier.shape = NA) +
-  geom_jitter(alpha = 0.2, position = position_jitter(width  = 0.2)) +
-  scale_fill_manual(values = c("grey", "#e74c3C", "#e67e22", "#f1c40f")) +
-  scale_y_continuous(breaks =  seq(0, 15, 1), name = ggyaxis) +
-  scale_x_discrete("Paleontological thresholds") +
-  stat_summary(fun = mean, geom = "point", shape = 23, size = 3, fill = "white") +
-  geom_hline(yintercept = lateMiocene_ends, col = "#2c3e50", size = 1, linetype = "dotted") +
-  annotate("text", x = 4.5 , y = 8.5, label = "Late Miocene", colour = "#2c3e50", angle = 90, size = 5) +
-  geom_hline(yintercept = lateMiocene_starts, col = "#2c3e50", size = 1, linetype = "dotted") +
-  theme_minimal() +
-  theme(legend.position = "none")
 
-ggsave("figures/output/Figure_2.png", fig2, width = 6.6, height = 3.3, dpi = 360, bg = 'white')
+  geom_boxplot(outlier.shape = NA) +
+
+  geom_jitter(alpha = 0.2, position = position_jitter(width = 0.2)) +
+
+  # Original Color Palette
+  scale_fill_manual(values = c("grey", "#e74c3C", "#e67e22", "#f1c40f")) +
+
+  scale_y_continuous(breaks = seq(0, 15, 1), name = ggyaxis) +
+
+  scale_x_discrete("Paleontological thresholds") +
+
+  # Arithmetic mean diamond
+  stat_summary(fun = mean, geom = "point", shape = 23, size = 3, fill = "white") +
+
+  # Horizontal reference lines for Miocene boundaries (updated size to linewidth)
+  geom_hline(yintercept = lateMiocene_ends,
+             col = "#2c3e50", linewidth = 1, linetype = "dotted") +
+
+  geom_hline(yintercept = lateMiocene_starts,
+             col = "#2c3e50", linewidth = 1, linetype = "dotted") +
+
+  # Vertical annotation text
+  annotate("text", x = 4.5, y = 8.5, label = "Late Miocene",
+           colour = "#2c3e50", angle = 90, size = 5) +
+
+  guides(fill = "none") + # Hide legend as X-axis labels are sufficient
+  theme_minimal()
+
+# Save Figure 2 using original dimensions and format
+ggsave("figures/output/Figure_2.png", fig2, width = 6.6, height = 3.3, dpi = "retina",
+       device = "png", bg = 'white')
 
 # ------------------------------------------------------------------------------
 # FIGURE 3: Temporal Trend
