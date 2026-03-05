@@ -1,6 +1,6 @@
 # --- supplementary/make_si_figures.R ---
 # Unified SI Figure Generation Script - MAXIMIZED FOR LARGE DATASETS
-# Updated: Explicit NA filtering to ensure clean logs and data integrity.
+# Updated: Explicit NA filtering and aesthetic consistency.
 
 library(ggplot2)
 library(dplyr)
@@ -10,6 +10,8 @@ library(ggdist)
 library(scales)
 library(glue)
 library(tidyr)
+library(stringr)
+library(brms)
 
 # Load the project foundation
 source("R/prepare_data.R")
@@ -22,7 +24,6 @@ if(!dir.exists("supplementary/output")) dir.create("supplementary/output", recur
 # ------------------------------------------------------------------------------
 message("Generating SI Figure 1...")
 
-# SAFETY: Explicitly filter NAs before gathering to avoid "non-finite" warnings
 dens3 <- HomoPanDivergences %>%
   select(Min, ESTIMATION, Max) %>%
   pivot_longer(cols = everything(), names_to = "key", values_to = "value") %>%
@@ -48,7 +49,7 @@ ggsave("supplementary/output/SI_Figure_1.png", si_fig1, width = 5, height = 2, d
 # SI BMA FOREST PLOTS (NO TITLES, MAX SPACE)
 # ------------------------------------------------------------------------------
 
-plot_si_bma <- function(model_path, x_lims = c(2, 16)) {
+plot_si_bma <- function(model_path, x_lims = c(1, 16.2)) {
 
   if(!file.exists(model_path)) {
     warning(paste("Model file not found:", model_path))
@@ -64,7 +65,7 @@ plot_si_bma <- function(model_path, x_lims = c(2, 16)) {
   pooled.effect.draws <- spread_draws(mod, b_Intercept) %>%
     mutate(Author = "Pooled Effect")
 
-  # SAFETY: Combine and explicitly filter out any NAs that might exist in the posterior
+  # SAFETY: Combine and explicitly filter out any NAs
   forest.data <- bind_rows(study.draws, pooled.effect.draws) %>%
     ungroup() %>%
     filter(!is.na(b_Intercept)) %>%
@@ -78,29 +79,28 @@ plot_si_bma <- function(model_path, x_lims = c(2, 16)) {
   p <- ggplot(aes(x = b_Intercept,
                   y = relevel(as_factor(Author), "Pooled Effect", after = Inf),
                   fill = after_stat(x)), data = forest.data) +
-    # White background for the "future" side of the plot
+    # White background for labels
     annotate("rect", xmin = 15.1, xmax = Inf, ymin = -Inf, ymax = Inf, fill = "white") +
-    # Reference lines from model summary
-    geom_vline(xintercept = fixef(mod)[1, 1], color = "grey23", size = 0.8, linetype = 4) +
-    geom_vline(xintercept = fixef(mod)[1, 3:4], color = "grey", linetype = 2) +
-    # Density ridges with viridis gradient
-    geom_density_ridges_gradient(rel_min_height = 0.01, col = NA, scale = 1.1) +
-    scale_fill_viridis_c(guide = "none") + # Surgical removal of the color key
-    # Error bars and mean points
-    geom_pointinterval(data = forest.data.summary, aes(xmin = .lower, xmax = .upper), size = 0.5) +
+    # Reference lines
+    geom_vline(xintercept = fixef(mod)[1, 1], color = "grey23", linewidth = 1, linetype = 4) +
+    geom_vline(xintercept = fixef(mod)[1, 3:4], color = "grey", linewidth = 0.5, linetype = 2) +
+    # Density ridges
+    geom_density_ridges_gradient(rel_min_height = 0.01, col = NA, scale = 1.5) +
+    scale_fill_viridis_c(guide = "none") +
+    # Error bars
+    geom_pointinterval(data = forest.data.summary, aes(xmin = .lower, xmax = .upper), size = 1) +
+    # Numerical Labels
+    geom_text(data = mutate_if(forest.data.summary, is.numeric, round, 2),
+              aes(label = glue("{b_Intercept} [{.lower}, {.upper}]"), x = 16.2),
+              hjust = "inward", fontface = "plain", size = 2.5) +
     labs(x = "Standardized Mean Divergence (Ma)", y = NULL) +
     scale_x_continuous(limits = x_lims, breaks = seq(0, 16, 2), expand = c(0.01, 0)) +
     theme_minimal() +
-    theme(
-      axis.text.y = element_text(size = 7),
-      plot.margin = margin(5, 15, 5, 5),
-      panel.grid.minor = element_blank()
-    )
+    theme(axis.text.y = element_text(size = 6)) # Smaller text for SI crowded plots
 
   return(p)
 }
 
-# Define figure specific settings (height depends on study count)
 si_models <- list(
   list(path = "models/bma_subset_FullData.rds", file = "SI_Figure_2.png", h = 14),
   list(path = "models/bma_subset_A.rds",        file = "SI_Figure_3.png", h = 12),
@@ -108,7 +108,6 @@ si_models <- list(
   list(path = "models/bma_subset_C.rds",        file = "SI_Figure_5.png", h = 8)
 )
 
-# Execute loop
 for(m in si_models) {
   message(glue("Processing {m$file}..."))
   p <- plot_si_bma(m$path)

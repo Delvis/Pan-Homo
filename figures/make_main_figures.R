@@ -111,25 +111,59 @@ fig4_final <- plot_grid(fig4_combined, legend_fig4, ncol = 1, rel_heights = c(4,
 ggsave("figures/output/Figure_4.png", fig4_final, width = 9, height = 12, dpi = 360, bg = 'white')
 
 # ------------------------------------------------------------------------------
-# FIGURE 5: Meta-Analysis (FIXED EXTRA LEGEND)
+# FIGURE 5: Meta-Analysis of Phylogenomic Estimates
 # ------------------------------------------------------------------------------
-mod <- readRDS("models/bma_final_genomic.rds")
-study.draws <- spread_draws(mod, r_Author[Author,], b_Intercept) %>% mutate(b_Intercept = r_Author + b_Intercept)
-pooled.effect.draws <- spread_draws(mod, b_Intercept) %>% mutate(Author = "Pooled Effect")
-forest.data <- bind_rows(study.draws, pooled.effect.draws) %>%
-  ungroup() %>% mutate(Author = str_replace_all(Author, "[.]", " ")) %>% mutate(Author = reorder(Author, b_Intercept))
-forest.data.summary <- group_by(forest.data, Author) %>% mean_qi(b_Intercept)
+library(brms) # required for fixef()
 
+message("Generating Figure 5...")
+
+mod <- readRDS("models/bma_final_genomic.rds")
+
+# Extract draws
+study.draws <- spread_draws(mod, r_Author[Author,], b_Intercept) %>%
+  mutate(b_Intercept = r_Author + b_Intercept)
+
+pooled.effect.draws <- spread_draws(mod, b_Intercept) %>%
+  mutate(Author = "Pooled Effect")
+
+# Combine and reorder
+forest.data <- bind_rows(study.draws, pooled.effect.draws) %>%
+  ungroup() %>%
+  mutate(Author = str_replace_all(Author, "[.]", " ")) %>%
+  mutate(Author = reorder(Author, b_Intercept))
+
+forest.data.summary <- forest.data %>%
+  group_by(Author) %>%
+  mean_qi(b_Intercept)
+
+# Build the plot
 fig5 <- ggplot(aes(x = b_Intercept,
                    y = relevel(as_factor(Author), "Pooled Effect", after = Inf),
                    fill = after_stat(x)), data = forest.data) +
+
+  # White background for text labels
   annotate("rect", xmin = 15.1, xmax = Inf, ymin = -Inf, ymax = Inf, fill = "white") +
-  geom_vline(xintercept = fixef(mod)[1, 1], color = "grey23", size = 1, linetype = 4) +
+
+  # Reference Lines (Updated from 'size' to 'linewidth' to stop warnings)
+  geom_vline(xintercept = fixef(mod)[1, 1], color = "grey23", linewidth = 1, linetype = 4) +
   geom_vline(xintercept = fixef(mod)[1, 3:4], color = "grey", linetype = 2) +
+
+  # Density Ridges
   geom_density_ridges_gradient(rel_min_height = 0.01, col = NA, scale = 1.5) +
   scale_fill_viridis_c(guide = "none") +
-  geom_pointinterval(data = forest.data.summary, aes(xmin = .lower, xmax = .upper), size = 1) +
+
+  # Point Intervals (Updated from 'size' to 'linewidth')
+  geom_pointinterval(data = forest.data.summary,
+                     aes(xmin = .lower, xmax = .upper),
+                     linewidth = 0.8, size = 1) +
+
+  # Numerical Labels
+  geom_text(data = mutate_if(forest.data.summary, is.numeric, round, 2),
+            aes(label = glue("{b_Intercept} [{.lower}, {.upper}]"), x = 16.2),
+            hjust = "inward", fontface = "plain") +
+
   labs(x = "Standardized Mean Divergence (Ma)", y = NULL) +
+  scale_x_continuous(limits = c(3.4, 16.2), breaks =  seq(0, 15, 1), expand = c(0, 0)) +
   theme_minimal()
 
-ggsave("figures/output/Figure_5.png", fig5, width = 8, height = 10, dpi = 360, bg = 'white')
+ggsave("figures/output/Figure_5.png", fig5, width = 8, height = 7, dpi = 360, bg = 'white')
