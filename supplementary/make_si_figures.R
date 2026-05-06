@@ -39,17 +39,17 @@ si_fig1 <- ggplot(dens3, aes(x = value, color = key)) +
   geom_vline(xintercept = median(HomoPanDivergences$Max, na.rm = TRUE), col = vcols[3], linetype = "dashed") +
   scale_color_discrete(name = "Density curves", labels = c("Min range", "Divergence estimate", "Max range")) +
   scale_y_continuous(labels = scales::percent) +
-  scale_x_continuous(name = "Mega-annum (Ma)", limits = c(0, 16), breaks = seq(0, 16, by = 1)) +
+  scale_x_continuous(name = "Mega-annum (Ma)", limits = c(0, 16.5), breaks = seq(0, 16, by = 1)) +
   theme_classic() +
   theme(legend.position = c(0.85, 0.7))
 
-ggsave("supplementary/output/SI_Figure_1.png", si_fig1, width = 5, height = 2, dpi = 360, bg = 'white')
+ggsave("supplementary/output/SI_Figure_1.png", si_fig1, width = 12, height = 5, dpi = 360, scale = 0.5, bg = 'white')
 
 # ------------------------------------------------------------------------------
 # SI BMA FOREST PLOTS (NO TITLES, MAX SPACE)
 # ------------------------------------------------------------------------------
 
-plot_si_bma <- function(model_path, x_lims = c(1, 16.2)) {
+plot_si_bma <- function(model_path, x_lims = c(1.2, 16.2)) {
 
   if(!file.exists(model_path)) {
     warning(paste("Model file not found:", model_path))
@@ -94,7 +94,7 @@ plot_si_bma <- function(model_path, x_lims = c(1, 16.2)) {
               aes(label = glue("{b_Intercept} [{.lower}, {.upper}]"), x = 16.2),
               hjust = "inward", fontface = "plain", size = 2.5) +
     labs(x = "Standardized Mean Divergence (Ma)", y = NULL) +
-    scale_x_continuous(limits = x_lims, breaks = seq(0, 16, 2), expand = c(0.01, 0)) +
+    scale_x_continuous(limits = x_lims, breaks = seq(0, 16, 1), expand = c(0.01, 0)) +
     theme_minimal() +
     theme(axis.text.y = element_text(size = 6)) # Smaller text for SI crowded plots
 
@@ -102,17 +102,17 @@ plot_si_bma <- function(model_path, x_lims = c(1, 16.2)) {
 }
 
 si_models <- list(
-  list(path = "models/bma_subset_FullData.rds", file = "SI_Figure_2.png", h = 14),
-  list(path = "models/bma_subset_A.rds",        file = "SI_Figure_3.png", h = 12),
-  list(path = "models/bma_subset_B.rds",        file = "SI_Figure_4.png", h = 10),
-  list(path = "models/bma_subset_C.rds",        file = "SI_Figure_5.png", h = 8)
+  list(path = "models/bma_subset_A.rds",        file = "SI_Figure_2.png", h = 11, s = 1),
+  list(path = "models/bma_subset_B.rds",        file = "SI_Figure_3.png", h = 11, s = .8),
+  list(path = "models/bma_subset_C.rds",        file = "SI_Figure_4.png", h = 11, s = .6),
+  list(path = "models/bma_subset_FullData.rds", file = "SI_Figure_5.png", h = 14, s = 1)
 )
 
 for(m in si_models) {
   message(glue("Processing {m$file}..."))
   p <- plot_si_bma(m$path)
   if(!is.null(p)) {
-    ggsave(paste0("supplementary/output/", m$file), p, width = 8, height = m$h, dpi = 360, bg = 'white')
+    ggsave(paste0("supplementary/output/", m$file), p, width = 8, height = m$h, scale = m$s, dpi = 360, bg = 'white')
   }
 }
 

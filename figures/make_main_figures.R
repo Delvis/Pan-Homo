@@ -117,6 +117,7 @@ ggsave("figures/output/Figure_3.png", fig3, width = 12, height = 7, dpi = 360, b
 # ------------------------------------------------------------------------------
 # FIGURE 4: Grid Regressions (Combined logic from your snippet)
 # ------------------------------------------------------------------------------
+source("figures/helper_figs.R")
 # [Subplots goReg, gmtReg, gnReg, ggReg as per provided definitions]
 fig4_combined <- plot_grid(goReg + theme(legend.position = "none"),
                            gmtReg + theme(legend.position = "none"),

@@ -72,7 +72,7 @@ bma_results <- bind_rows(
   get_bma_summary("models/bma_subset_A.rds",        "Filter A (>4.4 Ma)"),
   get_bma_summary("models/bma_subset_B.rds",        "Filter B (>6.2 Ma)"),
   get_bma_summary("models/bma_subset_C.rds",        "Filter C (>7.2 Ma)"),
-  get_bma_summary("models/bma_final_genomic.rds",   "Main Genomic (>4.5 Ma)")
+  get_bma_summary("models/bma_final_genomic.rds",   "Main Genomic")
 )
 
 # ------------------------------------------------------------------------------
